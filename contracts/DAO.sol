@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/ICxoNFT.sol";
 import "../interfaces/IFakeNFTMarketplace.sol";
+import "../node_modules/hardhat/console.sol";
 
 contract DAO is Ownable {
     IFakeNFTMarketplace nftMarketplace;
@@ -133,6 +134,7 @@ contract DAO is Ownable {
         // It calculates how many NFTs are owned by the voter that
         // haven't already been used for voting on this proposal
         for (uint256 i = 0; i < voterNFTBalance; i++) {
+            console.log(cxoNft.tokenOfOwnerByIndex(msg.sender, i));
             uint256 tokenId = cxoNft.tokenOfOwnerByIndex(msg.sender, i);
             if (proposal.voters[tokenId] == false) {
                 numVotes++;
@@ -175,5 +177,12 @@ contract DAO is Ownable {
      */
     function _withdrawEther() external onlyOwner {
         payable(owner()).transfer(address(this).balance);
+    }
+
+    /**
+     * @dev nftBalance gets the CxoNft balance of the caller
+     */
+    function nftBalance() public view  returns(uint) {
+        return cxoNft.balanceOf(msg.sender);
     }
 }
